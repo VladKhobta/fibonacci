@@ -1,0 +1,41 @@
+version: '3.10'
+
+services:
+
+  rabbitmq:
+    image: rabbitmq:3.11.4-management
+    container_name: 'rabbitmq'
+    hostname: rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 2147483648
+#    volumes:
+#      - ./rabbitmq:/var/lib/rabbitmq
+    ports:
+      - 15672:15672
+      - 5672:5672
+    networks:
+      - network
+
+  consumer:
+    build: consumer
+    container_name: 'consumer'
+    environment:
+      - QUEUE_NAME=fibonacci
+    restart: always
+    networks:
+      - network
+
+  sender:
+    build: sender
+    container_name: 'sender'
+    environment:
+      - QUEUE_NAME=appeals
+    restart: always
+    networks:
+      - network
+
+networks:
+  network: {}
